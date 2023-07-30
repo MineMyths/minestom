@@ -48,7 +48,7 @@ public class DynamicChunk extends Chunk {
 
     // Key = ChunkUtils#getBlockIndex
     protected final Int2ObjectOpenHashMap<Block> entries = new Int2ObjectOpenHashMap<>(0);
-    protected final Int2ObjectOpenHashMap<Block> tickableMap = new Int2ObjectOpenHashMap<>(0);
+//    protected final Int2ObjectOpenHashMap<Block> tickableMap = new Int2ObjectOpenHashMap<>(0);
 
     private long lastChange;
     final CachedPacket chunkCache = new CachedPacket(this::createChunkPacket);
@@ -98,11 +98,11 @@ public class DynamicChunk extends Chunk {
             lastCachedBlock = this.entries.remove(index);
         }
         // Block tick
-        if (handler != null && handler.isTickable()) {
-            this.tickableMap.put(index, block);
-        } else {
-            this.tickableMap.remove(index);
-        }
+//        if (handler != null && handler.isTickable()) {
+//            this.tickableMap.put(index, block);
+//        } else {
+//            this.tickableMap.remove(index);
+//        }
 
         // Update block handlers
         var blockPosition = new Vec(x, y, z);
@@ -143,15 +143,15 @@ public class DynamicChunk extends Chunk {
 
     @Override
     public void tick(long time) {
-        if (tickableMap.isEmpty()) return;
-        tickableMap.int2ObjectEntrySet().fastForEach(entry -> {
-            final int index = entry.getIntKey();
-            final Block block = entry.getValue();
-            final BlockHandler handler = block.handler();
-            if (handler == null) return;
-            final Point blockPosition = ChunkUtils.getBlockPosition(index, chunkX, chunkZ);
-            handler.tick(new BlockHandler.Tick(block, instance, blockPosition));
-        });
+//        if (tickableMap.isEmpty()) return;
+//        tickableMap.int2ObjectEntrySet().fastForEach(entry -> {
+//            final int index = entry.getIntKey();
+//            final Block block = entry.getValue();
+//            final BlockHandler handler = block.handler();
+//            if (handler == null) return;
+//            final Point blockPosition = ChunkUtils.getBlockPosition(index, chunkX, chunkZ);
+//            handler.tick(new BlockHandler.Tick(block, instance, blockPosition));
+//        });
     }
 
     @Override

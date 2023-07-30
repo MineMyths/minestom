@@ -3,8 +3,6 @@ plugins {
     alias(libs.plugins.blossom)
 
     `maven-publish`
-    signing
-    alias(libs.plugins.nexuspublish)
 }
 
 version = System.getenv("SHORT_COMMIT_HASH") ?: "dev"
@@ -64,6 +62,9 @@ dependencies {
     api(libs.bundles.hephaistos)
     implementation(libs.minestomData)
 
+    // Libraries required for the terminal
+    implementation(libs.bundles.terminal)
+
     // Performance/data structures
     implementation(libs.caffeine)
     api(libs.fastutil)
@@ -77,16 +78,22 @@ dependencies {
 }
 
 tasks {
+
+    compileJava {
+        options.encoding = Charsets.UTF_8.name()
+        options.release.set(17)
+    }
+
     withType<Javadoc> {
         (options as? StandardJavadocDocletOptions)?.apply {
-            encoding = "UTF-8"
+            encoding = Charsets.UTF_8.name()
 
             // Custom options
             addBooleanOption("html5", true)
             addStringOption("-release", "17")
             // Links to external javadocs
             links("https://docs.oracle.com/en/java/javase/17/docs/api/")
-            links("https://jd.adventure.kyori.net/api/${libs.versions.adventure.get()}/")
+            links("https://jd.advntr.dev/api/${libs.versions.adventure.get()}/")
         }
     }
 
@@ -102,21 +109,6 @@ tasks {
         replaceToken("\"&BRANCH\"", if (gitBranch == null) "null" else "\"${gitBranch}\"", gitFile)
         replaceToken("\"&GROUP\"", if (group == null) "null" else "\"${group}\"", gitFile)
         replaceToken("\"&ARTIFACT\"", if (artifact == null) "null" else "\"${artifact}\"", gitFile)
-    }
-
-    nexusPublishing{
-        useStaging.set(true)
-        this.packageGroup.set("dev.hollowcube")
-
-        repositories.sonatype {
-            nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
-            snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
-
-            if (System.getenv("SONATYPE_USERNAME") != null) {
-                username.set(System.getenv("SONATYPE_USERNAME"))
-                password.set(System.getenv("SONATYPE_PASSWORD"))
-            }
-        }
     }
 
     publishing.publications.create<MavenPublication>("maven") {
@@ -166,15 +158,5 @@ tasks {
                 url.set("https://github.com/hollow-cube/minestom-ce/actions")
             }
         }
-    }
-
-    signing {
-        isRequired = System.getenv("CI") != null
-
-        val privateKey = System.getenv("GPG_PRIVATE_KEY")
-        val keyPassphrase = System.getenv()["GPG_PASSPHRASE"]
-        useInMemoryPgpKeys(privateKey, keyPassphrase)
-
-        sign(publishing.publications)
     }
 }
