@@ -44,6 +44,9 @@ public non-sealed class Inventory extends AbstractInventory implements Viewable 
     // (player -> cursor item) map, used by the click listeners
     private final ConcurrentHashMap<Player, ItemStack> cursorPlayersItem = new ConcurrentHashMap<>();
 
+    // The fallback inventory
+    private Inventory fallback;
+
     public Inventory(@NotNull InventoryType inventoryType, @NotNull Component title) {
         super(inventoryType.getSize());
         this.id = generateId();
@@ -90,6 +93,24 @@ public non-sealed class Inventory extends AbstractInventory implements Viewable 
         sendPacketToViewers(new OpenWindowPacket(getWindowId(), getInventoryType().getWindowType(), title));
         // Send inventory items
         update();
+    }
+
+    /**
+     * Sets the fallback inventory. If the fallback is not null, then the fallback is opened when the player closes the inventory.
+     *
+     * @param fallback the fallback inventory
+     */
+    public void setFallback(Inventory fallback) {
+        this.fallback = fallback;
+    }
+
+    /**
+     * Gets the fallback inventory.
+     *
+     * @return the fallback inventory
+     */
+    public Inventory getFallback() {
+        return fallback;
     }
 
     /**
