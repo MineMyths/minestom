@@ -20,7 +20,7 @@ public final class TimeUnit {
     private TimeUnit() {
     }
 
-    public TemporalUnit[] values() {
+    public static TemporalUnit[] values() {
         return new TemporalUnit[] {DAY, HOUR, MINUTE, SECOND, MILLISECOND, SERVER_TICK, CLIENT_TICK};
     }
 }
